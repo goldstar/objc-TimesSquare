@@ -83,7 +83,7 @@
  */
 @property (nonatomic) CGPoint contentOffset;
 
-/** Whether or not the calendar highlights a range of dates between two selected dates. If true, only the first two selected dates will be used. If the user attempts to select a third date, the calendar will attempt to instead move the closest selected date.
+/** Whether or not the calendar highlights a range of dates between two selected dates. If true, only the first two selected dates will be used. If the user attempts to select a third date, the calendar will attempt to instead move the closest selected date. Ignored if allowsMultipleSections is NO.
  */
 @property (nonatomic) BOOL showsRange;
 

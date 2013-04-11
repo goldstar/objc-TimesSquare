@@ -137,7 +137,9 @@
 	
 	// keep track of the dates we need to turn off, as well as on
 	NSMutableArray *deselectingDates = [self.selectedDates mutableCopy];
-	[deselectingDates removeObjectsInArray:dates];
+	if (self.allowsMultipleSelection) {
+		[deselectingDates removeObjectsInArray:dates];
+	}
 	
 	[dates removeObjectsInArray:self.selectedDates];
 	
@@ -185,7 +187,7 @@
 		}
 	}
 	
-	_selectedDates = newSelectedDates;
+	_selectedDates = self.allowsMultipleSelection ? newSelectedDates : dates;
 }
 
 - (void)scrollToDate:(NSDate *)date animated:(BOOL)animated
