@@ -16,10 +16,10 @@
 @property (nonatomic, strong) NSArray *dayButtons;
 @property (nonatomic, strong) NSArray *notThisMonthButtons;
 @property (nonatomic, strong) UIButton *todayButton;
-@property (nonatomic, strong) UIButton *selectedButton;
+@property (nonatomic, strong) NSArray *selectedButtons;
 
 @property (nonatomic, assign) NSInteger indexOfTodayButton;
-@property (nonatomic, assign) NSInteger indexOfSelectedButton;
+@property (nonatomic, strong) NSIndexSet *indexesOfSelectedButtons;
 
 @property (nonatomic, strong) NSDateFormatter *dayFormatter;
 @property (nonatomic, strong) NSDateFormatter *accessibilityFormatter;
@@ -38,7 +38,8 @@
     if (!self) {
         return nil;
     }
-    
+    self.indexesOfSelectedButtons = [NSIndexSet indexSet];
+	self.selectedButtons = [NSArray array];
     return self;
 }
 
@@ -96,21 +97,23 @@
     self.todayButton.titleLabel.shadowOffset = CGSizeMake(0.0f, -1.0f / [UIScreen mainScreen].scale);
 }
 
-- (void)createSelectedButton;
+- (UIButton *)createSelectedButton;
 {
-    self.selectedButton = [[UIButton alloc] initWithFrame:self.contentView.bounds];
-    [self.contentView addSubview:self.selectedButton];
-    [self configureButton:self.selectedButton];
+    UIButton *selectedButton = [[UIButton alloc] initWithFrame:self.contentView.bounds];
+    [self.contentView addSubview:selectedButton];
+    [self configureButton:selectedButton];
     
-    [self.selectedButton setAccessibilityTraits:UIAccessibilityTraitSelected|self.selectedButton.accessibilityTraits];
+    [selectedButton setAccessibilityTraits:UIAccessibilityTraitSelected|selectedButton.accessibilityTraits];
     
-    self.selectedButton.enabled = NO;
-    [self.selectedButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [self.selectedButton setBackgroundImage:[self selectedBackgroundImage] forState:UIControlStateNormal];
-    [self.selectedButton setTitleShadowColor:[UIColor colorWithWhite:0.0f alpha:0.75f] forState:UIControlStateNormal];
+    selectedButton.enabled = NO;
+    [selectedButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [selectedButton setBackgroundImage:[self selectedBackgroundImage] forState:UIControlStateNormal];
+    [selectedButton setTitleShadowColor:[UIColor colorWithWhite:0.0f alpha:0.75f] forState:UIControlStateNormal];
     
-    self.selectedButton.titleLabel.shadowOffset = CGSizeMake(0.0f, -1.0f / [UIScreen mainScreen].scale);
-    self.indexOfSelectedButton = -1;
+    selectedButton.titleLabel.shadowOffset = CGSizeMake(0.0f, -1.0f / [UIScreen mainScreen].scale);
+	self.selectedButtons = [self.selectedButtons arrayByAddingObject:selectedButton];
+	
+	return selectedButton;
 }
 
 - (void)setBeginningDate:(NSDate *)date;
@@ -122,8 +125,9 @@
 
     self.todayButton.hidden = YES;
     self.indexOfTodayButton = -1;
-    self.selectedButton.hidden = YES;
-    self.indexOfSelectedButton = -1;
+	for (UIButton *button in self.selectedButtons) {
+		button.hidden = YES;
+	}
     
     for (NSUInteger index = 0; index < self.daysInWeek; index++) {
         NSString *title = [self.dayFormatter stringFromDate:date];
@@ -178,7 +182,13 @@
     NSDateComponents *offset = [NSDateComponents new];
     offset.day = [self.dayButtons indexOfObject:sender];
     NSDate *selectedDate = [self.calendar dateByAddingComponents:offset toDate:self.beginningDate options:0];
-    self.calendarView.selectedDate = selectedDate;
+	if ([self.calendarView.selectedDates containsObject:selectedDate]) {
+		NSMutableArray *dates = self.calendarView.selectedDates.mutableCopy;
+		[dates removeObject:selectedDate];
+		self.calendarView.selectedDates = dates;
+	} else {
+		self.calendarView.selectedDates = [@[selectedDate] arrayByAddingObjectsFromArray:self.calendarView.selectedDates];
+	}
 }
 
 - (IBAction)todayButtonPressed:(id)sender;
@@ -186,7 +196,7 @@
     NSDateComponents *offset = [NSDateComponents new];
     offset.day = self.indexOfTodayButton;
     NSDate *selectedDate = [self.calendar dateByAddingComponents:offset toDate:self.beginningDate options:0];
-    self.calendarView.selectedDate = selectedDate;
+    self.calendarView.selectedDates = [@[selectedDate] arrayByAddingObjectsFromArray:self.calendarView.selectedDates];
 }
 
 - (void)layoutSubviews;
@@ -207,6 +217,21 @@
     self.backgroundView.frame = self.bounds;
 }
 
+- (UIButton *)unusedSelectedButton
+{
+	UIButton *retButton = nil;
+	for (UIButton *button in self.selectedButtons) {
+		if (button.hidden) {
+			retButton = button;
+			break;
+		}
+	}
+	if (!retButton) {
+		retButton = [self createSelectedButton];
+	}
+	return retButton;
+}
+
 - (void)layoutViewsForColumnAtIndex:(NSUInteger)index inRect:(CGRect)rect;
 {
     UIButton *dayButton = self.dayButtons[index];
@@ -218,14 +243,19 @@
     if (self.indexOfTodayButton == (NSInteger)index) {
         self.todayButton.frame = rect;
     }
-    if (self.indexOfSelectedButton == (NSInteger)index) {
-        self.selectedButton.frame = rect;
-    }
+	if ([self.indexesOfSelectedButtons containsIndex:(NSInteger)index]) {
+		// find an unused selected button
+		UIButton *button = [self unusedSelectedButton];
+		[button setTitle:[self.dayButtons[index] currentTitle] forState:UIControlStateNormal];
+        [button setAccessibilityLabel:[self.dayButtons[index] accessibilityLabel]];
+		button.hidden = NO;
+		button.frame = rect;
+	}
 }
 
 - (void)selectColumnForDate:(NSDate *)date;
 {
-    if (!date && self.indexOfSelectedButton == -1) {
+    if (!date && !self.indexesOfSelectedButtons.count) {
         return;
     }
 
@@ -240,16 +270,21 @@
         }
     }
 
-    self.indexOfSelectedButton = newIndexOfSelectedButton;
+	if (![self.indexesOfSelectedButtons containsIndex:newIndexOfSelectedButton]) {
+		NSMutableIndexSet *indexes = self.indexesOfSelectedButtons.mutableCopy;
+		[indexes addIndex:newIndexOfSelectedButton];
+		self.indexesOfSelectedButtons = indexes;
+	} else {
+		NSMutableIndexSet *indexes = self.indexesOfSelectedButtons.mutableCopy;
+		[indexes removeIndex:newIndexOfSelectedButton];
+		self.indexesOfSelectedButtons = indexes;
+	}
     
-    if (newIndexOfSelectedButton >= 0) {
-        self.selectedButton.hidden = NO;
-        [self.selectedButton setTitle:[self.dayButtons[newIndexOfSelectedButton] currentTitle] forState:UIControlStateNormal];
-        [self.selectedButton setAccessibilityLabel:[self.dayButtons[newIndexOfSelectedButton] accessibilityLabel]];
-    } else {
-        self.selectedButton.hidden = YES;
-    }
-    
+	// reset all our selected buttons
+	for (UIButton *button in self.selectedButtons) {
+		button.hidden = YES;
+	}
+	
     [self setNeedsLayout];
 }
 

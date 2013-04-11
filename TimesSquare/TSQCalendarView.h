@@ -40,7 +40,7 @@
  Set this property to any `NSDate`; `TSQCalendarView` will only look at the month, day, and year.
  You can read and write this property; the delegate method `calendarView:didSelectDate:` will be called both when a new date is selected from the UI and when this method is called manually.
  */
-@property (nonatomic, strong) NSDate *selectedDate;
+@property (nonatomic, strong) NSArray *selectedDates;
 
 /** @name Calendar Configuration */
 
@@ -82,6 +82,15 @@
  This property is equivalent to the one defined on `UIScrollView`.
  */
 @property (nonatomic) CGPoint contentOffset;
+
+/** Whether or not the calendar highlights a range of dates between two selected dates. If true, only the first two selected dates will be used. If the user attempts to select a third date, the calendar will attempt to instead move the closest selected date.
+ */
+@property (nonatomic) BOOL showsRange;
+
+/** Whether or not the calendar shows multiple selected dates.
+ */
+@property (nonatomic) BOOL allowsMultipleSelection;
+
 
 /** The cell class to use for month headers.
  
