@@ -407,8 +407,14 @@
         dateComponents.day = 1 - ordinalityOfFirstDay;
         dateComponents.week = indexPath.row - (self.pinsHeaderToTop ? 0 : 1);
         [(TSQCalendarRowCell *)cell setBeginningDate:[self.calendar dateByAddingComponents:dateComponents toDate:firstOfMonth options:0]];
-		for (NSDate *date in self.selectedDates) {
-			[(TSQCalendarRowCell *)cell selectColumnForDate:date];
+		if (!(self.showsRange && self.allowsMultipleSelection && self.selectedDates.count == 2)) {
+			for (NSDate *date in self.selectedDates) {
+				[(TSQCalendarRowCell *)cell selectColumnForDate:date];
+			}
+		} else {
+			for (NSDate *date in [self dateRangeBetweenDate:self.selectedDates[0] includingDate:YES andDate:self.selectedDates[1] includingDate:YES]) {
+				[(TSQCalendarRowCell *)cell selectColumnForDate:date];
+			}
 		}
         
         BOOL isBottomRow = (indexPath.row == [self tableView:tableView numberOfRowsInSection:indexPath.section] - (self.pinsHeaderToTop ? 0 : 1));

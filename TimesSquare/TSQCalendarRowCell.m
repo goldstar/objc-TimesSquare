@@ -43,6 +43,11 @@
     return self;
 }
 
+- (void)prepareForReuse
+{
+	self.indexesOfSelectedButtons = [NSIndexSet indexSet];
+}
+
 - (void)configureButton:(UIButton *)button;
 {
     button.titleLabel.font = [UIFont boldSystemFontOfSize:19.f];
