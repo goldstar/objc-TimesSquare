@@ -270,6 +270,9 @@
         }
     }
 
+	if (newIndexOfSelectedButton < 0)
+		return;
+	
 	if (![self.indexesOfSelectedButtons containsIndex:newIndexOfSelectedButton]) {
 		NSMutableIndexSet *indexes = self.indexesOfSelectedButtons.mutableCopy;
 		[indexes addIndex:newIndexOfSelectedButton];
