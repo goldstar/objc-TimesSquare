@@ -123,9 +123,45 @@
     _lastDate = [self.calendar dateByAddingComponents:offsetComponents toDate:firstOfMonth options:0];
 }
 
+- (NSArray *)dateRangeBetweenDate:(NSDate*)date1 includingDate:(BOOL)include1 andDate:(NSDate*)date2 includingDate:(BOOL)include2
+{
+	if (!date1 && !date2)
+		return @[];
+	if (date1 && !date2)
+		return @[date1];
+	else if (date2 && !date1)
+		return @[date2];
+	
+	NSMutableArray *range = [NSMutableArray array];
+	
+	NSDate *first = ([date1 compare:date2] == NSOrderedAscending) ? date1 : date2;
+	NSDate *last = first == date1 ? date2 : date1;
+	
+	if (((first == date1) && include1) || ((first == date2) && include2)) {
+		[range addObject:first];
+	}
+	
+	NSDateComponents* oneDay = [[NSDateComponents alloc] init];
+	[oneDay setDay:1];
+	
+	NSDate *tomorrow = first;
+	while ([last compare:tomorrow] != NSOrderedSame)
+	{
+		tomorrow = [self.calendar dateByAddingComponents:oneDay toDate:tomorrow options:0];
+		[range addObject:tomorrow];
+	}
+	[range removeLastObject];
+	
+	if (((last == date1) && include1) || ((last == date2) && include2)) {
+		[range addObject:last];
+	}
+	
+	return range;
+}
+
 - (void)setSelectedDates:(NSArray *)newSelectedDates;
 {
-    // clamp to beginning of its day
+    // clamp to beginning of each day
 	NSMutableArray *dates = [NSMutableArray arrayWithCapacity:newSelectedDates.count];
 	for (NSDate *date in newSelectedDates)
 	{
@@ -135,13 +171,38 @@
 		}
 	}
 	
+	// if we don't have multiple selection, don't bother with range
+	BOOL showsRange = self.showsRange && self.allowsMultipleSelection && (self.selectedDates.count > 1 || dates.count > 1);
+	
+	if (showsRange) {
+		// if we're getting more than three dates, give up on being smart
+		if (dates.count > 3) {
+			dates = @[dates[0], dates[1]].mutableCopy;
+		} else if (dates.count == 3 && self.selectedDates.count == 2) {
+			NSMutableArray *tempDates = [dates mutableCopy];
+			[tempDates removeObjectsInArray:self.selectedDates];
+			if (tempDates.count != 1) {
+				dates = @[dates[0], dates[1]].mutableCopy;
+			} else {
+				// replace the closest existing date with the new one
+				NSDate *newDate = tempDates[0];
+				CFTimeInterval interval1 = [newDate timeIntervalSinceDate:self.selectedDates[0]];
+				CFTimeInterval interval2 = [newDate timeIntervalSinceDate:self.selectedDates[1]];
+				NSDate *closestDate = fabsf(interval1) > fabsf(interval2) ? self.selectedDates[1] : self.selectedDates[0];
+				[dates removeObject:closestDate];
+			}
+		}
+	}
+	
 	// keep track of the dates we need to turn off, as well as on
 	NSMutableArray *deselectingDates = [self.selectedDates mutableCopy];
 	if (self.allowsMultipleSelection) {
 		[deselectingDates removeObjectsInArray:dates];
 	}
 	
-	[dates removeObjectsInArray:self.selectedDates];
+	if (!showsRange) {
+		[dates removeObjectsInArray:self.selectedDates];
+	}
 	
 	// trim to exactly one date if we don't allow multiple selection
 	if (!self.allowsMultipleSelection ) {
@@ -149,18 +210,21 @@
 			dates = [@[dates[0]] mutableCopy];
 		}
 	}
-	
-	for (NSDate *date in deselectingDates) {
-		[[self cellForRowAtDate:date] selectColumnForDate:date];
+	if (!showsRange) {
+		for (NSDate *date in deselectingDates) {
+			[[self cellForRowAtDate:date] selectColumnForDate:date];
+		}
 	}
-    
+	
 	// track selection area
 	CGRect newlySelectedRect = CGRectNull;
 	NSIndexPath *firstNewIndexPath = nil;
 	
 	for (NSDate *date in dates)
 	{
-		[[self cellForRowAtDate:date] selectColumnForDate:date];
+		if (!showsRange) {
+			[[self cellForRowAtDate:date] selectColumnForDate:date];
+		}
 		NSIndexPath *newIndexPath = [self indexPathForRowAtDate:date];
 		CGRect newIndexPathRect = [self.tableView rectForRowAtIndexPath:newIndexPath];
 		if (!firstNewIndexPath) {
@@ -187,7 +251,23 @@
 		}
 	}
 	
-	_selectedDates = self.allowsMultipleSelection ? newSelectedDates : dates;
+	// set selection state to show the range
+	if (showsRange) {
+		NSArray *oldRange = [self dateRangeBetweenDate:self.selectedDates.count ? self.selectedDates[0] : nil includingDate:YES andDate:self.selectedDates.count > 1 ? self.selectedDates[1] : nil includingDate:YES];
+		NSArray *newRange = [self dateRangeBetweenDate:dates.count ? dates[0] : nil includingDate:YES andDate:dates.count > 1 ? dates[1] : nil includingDate:YES];
+		for (NSDate *date in oldRange) {
+			[[self cellForRowAtDate:date] selectColumnForDate:date];
+		}
+		for (NSDate *date in newRange) {
+			[[self cellForRowAtDate:date] selectColumnForDate:date];
+		}
+	}
+	
+	if (self.allowsMultipleSelection && !showsRange) {
+		dates = newSelectedDates.mutableCopy;
+	}
+
+	_selectedDates = dates;
 }
 
 - (void)scrollToDate:(NSDate *)date animated:(BOOL)animated
