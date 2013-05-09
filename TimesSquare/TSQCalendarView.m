@@ -166,7 +166,7 @@
 	for (NSDate *date in newSelectedDates)
 	{
 		NSDate *startOfDay = [self clampDate:date toComponents:NSDayCalendarUnit|NSMonthCalendarUnit|NSYearCalendarUnit];
-		if (![self.delegate respondsToSelector:@selector(calendarView:shouldSelectDates:)] || [self.delegate calendarView:self shouldSelectDate:startOfDay]) {
+		if (![self.delegate respondsToSelector:@selector(calendarView:shouldSelectDate:)] || [self.delegate calendarView:self shouldSelectDate:startOfDay]) {
 			[dates addObject:startOfDay];
 		}
 	}
