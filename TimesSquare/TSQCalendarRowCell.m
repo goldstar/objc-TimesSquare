@@ -97,6 +97,7 @@
     
     [self.todayButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.todayButton setBackgroundImage:[self todayBackgroundImage] forState:UIControlStateNormal];
+    self.todayButton.adjustsImageWhenHighlighted = NO;
     [self.todayButton setTitleShadowColor:[UIColor colorWithWhite:0.0f alpha:0.75f] forState:UIControlStateNormal];
 
     self.todayButton.titleLabel.shadowOffset = CGSizeMake(0.0f, -1.0f / [UIScreen mainScreen].scale);
@@ -201,7 +202,13 @@
     NSDateComponents *offset = [NSDateComponents new];
     offset.day = self.indexOfTodayButton;
     NSDate *selectedDate = [self.calendar dateByAddingComponents:offset toDate:self.beginningDate options:0];
-    self.calendarView.selectedDates = [@[selectedDate] arrayByAddingObjectsFromArray:self.calendarView.selectedDates];
+	if ([self.calendarView.selectedDates containsObject:selectedDate]) {
+		NSMutableArray *dates = self.calendarView.selectedDates.mutableCopy;
+		[dates removeObject:selectedDate];
+		self.calendarView.selectedDates = dates;
+	} else {
+		self.calendarView.selectedDates = [@[selectedDate] arrayByAddingObjectsFromArray:self.calendarView.selectedDates];
+	}
 }
 
 - (void)layoutSubviews;

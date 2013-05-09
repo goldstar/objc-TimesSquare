@@ -210,11 +210,18 @@
 			dates = [@[dates[0]] mutableCopy];
 		}
 	}
-	if (!showsRange) {
+    
+    if (!showsRange) {
 		for (NSDate *date in deselectingDates) {
 			[[self cellForRowAtDate:date] selectColumnForDate:date];
 		}
 	}
+    
+    if ([self.delegate respondsToSelector:@selector(calendarView:didDeselectDate:)]) {
+        for (NSDate *date in deselectingDates) {
+            [self.delegate calendarView:self didDeselectDate:date];
+        }
+    }
 	
 	// track selection area
 	CGRect newlySelectedRect = CGRectNull;
@@ -240,17 +247,19 @@
 	// scroll to reveal new selection area
 	CGRect scrollBounds = self.tableView.bounds;
 	
-	if (self.pagingEnabled) {
-		CGRect sectionRect = [self.tableView rectForSection:firstNewIndexPath.section];
-		[self.tableView setContentOffset:sectionRect.origin animated:YES];
-	} else {
-		if (CGRectGetMinY(scrollBounds) > CGRectGetMinY(newlySelectedRect)) {
-			[self.tableView scrollToRowAtIndexPath:firstNewIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
-		} else if (CGRectGetMaxY(scrollBounds) < CGRectGetMaxY(newlySelectedRect)) {
-			[self.tableView scrollToRowAtIndexPath:firstNewIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-		}
-	}
-	
+    if (firstNewIndexPath) {
+        if (self.pagingEnabled) {
+            CGRect sectionRect = [self.tableView rectForSection:firstNewIndexPath.section];
+            [self.tableView setContentOffset:sectionRect.origin animated:YES];
+        } else {
+            if (CGRectGetMinY(scrollBounds) > CGRectGetMinY(newlySelectedRect)) {
+                [self.tableView scrollToRowAtIndexPath:firstNewIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            } else if (CGRectGetMaxY(scrollBounds) < CGRectGetMaxY(newlySelectedRect)) {
+                [self.tableView scrollToRowAtIndexPath:firstNewIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+            }
+        }
+    }
+
 	// set selection state to show the range
 	if (showsRange) {
 		NSArray *oldRange = [self dateRangeBetweenDate:self.selectedDates.count ? self.selectedDates[0] : nil includingDate:YES andDate:self.selectedDates.count > 1 ? self.selectedDates[1] : nil includingDate:YES];

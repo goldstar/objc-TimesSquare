@@ -140,4 +140,11 @@
  */
 - (void)calendarView:(TSQCalendarView *)calendarView didSelectDate:(NSDate *)date;
 
+/** Tells the delegate that a particular date was deselected.
+ 
+ @param calendarView The calendar view that is deselecting a date.
+ @param date Midnight on the date being deselected.
+ */
+- (void)calendarView:(TSQCalendarView *)calendarView didDeselectDate:(NSDate *)date;
+
 @end
