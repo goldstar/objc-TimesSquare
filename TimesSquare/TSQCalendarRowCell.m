@@ -50,7 +50,7 @@
 
 - (void)configureButton:(UIButton *)button;
 {
-    button.titleLabel.font = [UIFont boldSystemFontOfSize:19.f];
+    button.titleLabel.font = self.font;
     button.titleLabel.shadowOffset = self.shadowOffset;
     button.adjustsImageWhenDisabled = NO;
     [button setTitleColor:self.textColor forState:UIControlStateNormal];
