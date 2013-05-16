@@ -38,6 +38,7 @@
     if (!self) {
         return nil;
     }
+    self.showNotThisMonthDayLabels = YES;
     self.indexesOfSelectedButtons = [NSIndexSet indexSet];
 	self.selectedButtons = [NSArray array];
     return self;
@@ -140,7 +141,9 @@
         NSString *accessibilityLabel = [self.accessibilityFormatter stringFromDate:date];
         [self.dayButtons[index] setTitle:title forState:UIControlStateNormal];
         [self.dayButtons[index] setAccessibilityLabel:accessibilityLabel];
-        [self.notThisMonthButtons[index] setTitle:title forState:UIControlStateNormal];
+        if (self.showNotThisMonthDayLabels) {
+            [self.notThisMonthButtons[index] setTitle:title forState:UIControlStateNormal];
+        }
         [self.notThisMonthButtons[index] setAccessibilityLabel:accessibilityLabel];
         
         NSDateComponents *thisDateComponents = [self.calendar components:NSDayCalendarUnit|NSMonthCalendarUnit|NSYearCalendarUnit fromDate:date];

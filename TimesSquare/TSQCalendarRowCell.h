@@ -43,6 +43,13 @@
  */
 @property (nonatomic, weak, readonly) UIImage *notThisMonthBackgroundImage;
 
+/** Whether to show the day label for a day that's not this month.
+ 
+ These are the trailing days from the previous month or the leading days from the following month. Default is `YES`.
+ */
+@property (nonatomic, assign) BOOL *showNotThisMonthDayLabels;
+
+
 /** @name State Properties Set by Calendar View */
 
 /** The date at the beginning of the week for this cell.
