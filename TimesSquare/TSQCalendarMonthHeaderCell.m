@@ -29,8 +29,6 @@ static const CGFloat TSQCalendarMonthHeaderCellMonthsHeight = 20.f;
         return nil;
     }
     
-    [self createHeaderLabels];
-    
     return self;
 }
 
@@ -94,6 +92,10 @@ static const CGFloat TSQCalendarMonthHeaderCellMonthsHeight = 20.f;
 - (void)layoutSubviews;
 {
     [super layoutSubviews];
+    
+    if (!self.headerLabels) {
+        [self createHeaderLabels];
+    }
 
     CGRect bounds = self.contentView.bounds;
     bounds.size.height -= TSQCalendarMonthHeaderCellMonthsHeight;
