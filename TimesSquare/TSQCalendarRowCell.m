@@ -39,6 +39,7 @@
         return nil;
     }
     self.hideNotThisMonthDays = NO;
+    self.lightColoredTodayText = YES;
     self.indexesOfSelectedButtons = [NSIndexSet indexSet];
 	self.selectedButtons = [NSArray array];
     return self;
@@ -100,12 +101,13 @@
     [self configureButton:self.todayButton];
     [self.todayButton addTarget:self action:@selector(todayButtonPressed:) forControlEvents:UIControlEventTouchDown];
     
-    [self.todayButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.todayButton setBackgroundImage:[self todayBackgroundImage] forState:UIControlStateNormal];
     self.todayButton.adjustsImageWhenHighlighted = NO;
-    [self.todayButton setTitleShadowColor:[UIColor colorWithWhite:0.0f alpha:0.75f] forState:UIControlStateNormal];
-
-    self.todayButton.titleLabel.shadowOffset = CGSizeMake(0.0f, -1.0f / [UIScreen mainScreen].scale);
+    if (self.lightColoredTodayText) {
+        [self.todayButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [self.todayButton setTitleShadowColor:[UIColor colorWithWhite:0.0f alpha:0.75f] forState:UIControlStateNormal];
+        self.todayButton.titleLabel.shadowOffset = CGSizeMake(0.0f, -1.0f / [UIScreen mainScreen].scale);
+    }
 }
 
 - (UIButton *)createSelectedButton;

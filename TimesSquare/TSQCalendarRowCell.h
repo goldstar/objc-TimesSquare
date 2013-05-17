@@ -31,7 +31,6 @@
  */
 @property (nonatomic, weak, readonly) UIImage *thisMonthBackgroundImage;
 
-
 /** The background image for a day that's selected.
  
  This is blue in the system's built-in Calendar app. You probably want to use a stretchable image.
@@ -56,6 +55,11 @@
  */
 @property (nonatomic, assign) BOOL hideNotThisMonthDays;
 
+/** Whether the today text should be a light color
+ 
+ You may find yourself wanting a light or dark text color for the today cell depending on the `todayBackgroundImage`. Default is `YES`.
+ */
+@property (nonatomic, assign) BOOL lightColoredTodayText;
 
 /** @name State Properties Set by Calendar View */
 
