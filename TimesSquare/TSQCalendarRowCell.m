@@ -43,6 +43,8 @@
     self.indexesOfSelectedButtons = [NSIndexSet indexSet];
 	self.selectedButtons = [NSArray array];
     self.font = [UIFont boldSystemFontOfSize:19.0f];
+    self.controlEventsToSelectDate = UIControlEventTouchDown;
+    self.dayButtonsAdjustImageWhenHighlighted = NO;
     return self;
 }
 
@@ -65,13 +67,13 @@
     NSMutableArray *dayButtons = [NSMutableArray arrayWithCapacity:self.daysInWeek];
     for (NSUInteger index = 0; index < self.daysInWeek; index++) {
         UIButton *button = [[UIButton alloc] initWithFrame:self.contentView.bounds];
-        [button addTarget:self action:@selector(dateButtonPressed:) forControlEvents:UIControlEventTouchDown];
+        [button addTarget:self action:@selector(dateButtonPressed:) forControlEvents:self.controlEventsToSelectDate];
         [dayButtons addObject:button];
         [self.contentView addSubview:button];
         [self configureButton:button];
 
         [button setBackgroundImage:[self thisMonthBackgroundImage] forState:UIControlStateNormal];
-        button.adjustsImageWhenHighlighted = NO;
+        button.adjustsImageWhenHighlighted = self.dayButtonsAdjustImageWhenHighlighted;
         UIColor *disabledTitleColor = self.disabledTextColor ? self.disabledTextColor : [self.textColor colorWithAlphaComponent:0.5f];
         [button setTitleColor:disabledTitleColor forState:UIControlStateDisabled];
     }
@@ -100,10 +102,10 @@
     self.todayButton = [[UIButton alloc] initWithFrame:self.contentView.bounds];
     [self.contentView addSubview:self.todayButton];
     [self configureButton:self.todayButton];
-    [self.todayButton addTarget:self action:@selector(todayButtonPressed:) forControlEvents:UIControlEventTouchDown];
+    [self.todayButton addTarget:self action:@selector(todayButtonPressed:) forControlEvents:self.controlEventsToSelectDate];
     
     [self.todayButton setBackgroundImage:[self todayBackgroundImage] forState:UIControlStateNormal];
-    self.todayButton.adjustsImageWhenHighlighted = NO;
+    self.todayButton.adjustsImageWhenHighlighted = self.dayButtonsAdjustImageWhenHighlighted;
     UIColor *disabledTitleColor;
     if (self.lightColoredTodayText) {
         [self.todayButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];

@@ -10,10 +10,11 @@
 #import "TSQCalendarView.h"
 #import "TSQCalendarMonthHeaderCell.h"
 #import "TSQCalendarRowCell.h"
+#import "TSQTableView.h"
 
 @interface TSQCalendarView () <UITableViewDataSource, UITableViewDelegate>
 
-@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) TSQTableView *tableView;
 @property (nonatomic, strong) TSQCalendarMonthHeaderCell *headerView; // nil unless pinsHeaderToTop == YES
 
 @end
@@ -47,7 +48,7 @@
 
 - (void)_TSQCalendarView_commonInit;
 {
-    _tableView = [[UITableView alloc] initWithFrame:self.bounds style:UITableViewStylePlain];
+    _tableView = [[TSQTableView alloc] initWithFrame:self.bounds style:UITableViewStylePlain];
     _tableView.dataSource = self;
     _tableView.delegate = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;

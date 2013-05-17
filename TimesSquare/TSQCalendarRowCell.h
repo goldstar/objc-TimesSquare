@@ -49,6 +49,8 @@
  */
 @property (nonatomic, weak, readonly) UIImage *notThisMonthBackgroundImage;
 
+/** @name Display customizations */
+
 /** Whether to hide the days that are not this month.
  
  These are the trailing days from the previous month or the leading days from the following month. Default is `NO`.
@@ -66,6 +68,18 @@
  This font is used for all text the cell draws.
  */
 @property (nonatomic, strong) UIFont *font;
+
+/** When to select a date.
+ 
+ You should use `UIControlEventTouchDown` or `UIControlEventTouchUpInside`. Default value is `UIControlEventTouchDown`.
+ */
+@property (nonatomic, assign) UIControlEvents controlEventsToSelectDate;
+
+/** A Boolean value that determines whether the day background image changes when the button is highlighted.
+ 
+ Default value is NO. You should probably set to YES when using `UIControlEventTouchUpInside` for `controlEventsToSelectDate`
+ */
+@property (nonatomic, assign) BOOL dayButtonsAdjustImageWhenHighlighted;
 
 /** @name State Properties Set by Calendar View */
 
