@@ -103,11 +103,17 @@
     
     [self.todayButton setBackgroundImage:[self todayBackgroundImage] forState:UIControlStateNormal];
     self.todayButton.adjustsImageWhenHighlighted = NO;
+    UIColor *disabledTitleColor;
     if (self.lightColoredTodayText) {
         [self.todayButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [self.todayButton setTitleShadowColor:[UIColor colorWithWhite:0.0f alpha:0.75f] forState:UIControlStateNormal];
         self.todayButton.titleLabel.shadowOffset = CGSizeMake(0.0f, -1.0f / [UIScreen mainScreen].scale);
+        disabledTitleColor = [[UIColor whiteColor] colorWithAlphaComponent:0.5f];
     }
+    else {
+        disabledTitleColor = self.disabledTextColor ? self.disabledTextColor : [self.textColor colorWithAlphaComponent:0.5f];
+    }
+    [self.todayButton setTitleColor:disabledTitleColor forState:UIControlStateDisabled];
 }
 
 - (UIButton *)createSelectedButton;
@@ -164,6 +170,7 @@
 
             if ([self.todayDateComponents isEqual:thisDateComponents]) {
                 self.todayButton.hidden = NO;
+                self.todayButton.enabled = ![self.calendarView.delegate respondsToSelector:@selector(calendarView:shouldSelectDate:)] || [self.calendarView.delegate calendarView:self.calendarView shouldSelectDate:date];
                 [self.todayButton setTitle:title forState:UIControlStateNormal];
                 [self.todayButton setAccessibilityLabel:accessibilityLabel];
                 self.indexOfTodayButton = index;
