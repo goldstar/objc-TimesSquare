@@ -38,7 +38,7 @@
     if (!self) {
         return nil;
     }
-    self.showNotThisMonthDayLabels = YES;
+    self.hideNotThisMonthDays = NO;
     self.indexesOfSelectedButtons = [NSIndexSet indexSet];
 	self.selectedButtons = [NSArray array];
     return self;
@@ -67,6 +67,9 @@
         [dayButtons addObject:button];
         [self.contentView addSubview:button];
         [self configureButton:button];
+
+        [button setBackgroundImage:[self thisMonthBackgroundImage] forState:UIControlStateNormal];
+        button.adjustsImageWhenHighlighted = NO;
         UIColor *disabledTitleColor = self.disabledTextColor ? self.disabledTextColor : [self.textColor colorWithAlphaComponent:0.5f];
         [button setTitleColor:disabledTitleColor forState:UIControlStateDisabled];
     }
@@ -142,9 +145,7 @@
         NSString *accessibilityLabel = [self.accessibilityFormatter stringFromDate:date];
         [self.dayButtons[index] setTitle:title forState:UIControlStateNormal];
         [self.dayButtons[index] setAccessibilityLabel:accessibilityLabel];
-        if (self.showNotThisMonthDayLabels) {
-            [self.notThisMonthButtons[index] setTitle:title forState:UIControlStateNormal];
-        }
+        [self.notThisMonthButtons[index] setTitle:title forState:UIControlStateNormal];
         [self.notThisMonthButtons[index] setAccessibilityLabel:accessibilityLabel];
         
         NSDateComponents *thisDateComponents = [self.calendar components:NSDayCalendarUnit|NSMonthCalendarUnit|NSYearCalendarUnit fromDate:date];
@@ -154,7 +155,9 @@
 
         NSInteger thisDayMonth = thisDateComponents.month;
         if (self.monthOfBeginningDate != thisDayMonth) {
-            [self.notThisMonthButtons[index] setHidden:NO];
+            if (!self.hideNotThisMonthDays) {
+                [self.notThisMonthButtons[index] setHidden:NO];   
+            }
         } else {
 
             if ([self.todayDateComponents isEqual:thisDateComponents]) {

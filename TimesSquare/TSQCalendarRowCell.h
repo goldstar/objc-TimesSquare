@@ -25,6 +25,13 @@
  */
 @property (nonatomic, weak, readonly) UIImage *backgroundImage;
 
+/** The background image for a day that's in this month.
+ 
+ This will be the background image of each day in this month. This can be used with the `backgroundImage` or as a replacment to the `backgroundImage`. This can be `nil`.
+ */
+@property (nonatomic, weak, readonly) UIImage *thisMonthBackgroundImage;
+
+
 /** The background image for a day that's selected.
  
  This is blue in the system's built-in Calendar app. You probably want to use a stretchable image.
@@ -43,11 +50,11 @@
  */
 @property (nonatomic, weak, readonly) UIImage *notThisMonthBackgroundImage;
 
-/** Whether to show the day label for a day that's not this month.
+/** Whether to hide the days that are not this month.
  
- These are the trailing days from the previous month or the leading days from the following month. Default is `YES`.
+ These are the trailing days from the previous month or the leading days from the following month. Default is `NO`.
  */
-@property (nonatomic, assign) BOOL *showNotThisMonthDayLabels;
+@property (nonatomic, assign) BOOL hideNotThisMonthDays;
 
 
 /** @name State Properties Set by Calendar View */
