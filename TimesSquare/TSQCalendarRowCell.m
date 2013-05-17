@@ -42,6 +42,7 @@
     self.lightColoredTodayText = YES;
     self.indexesOfSelectedButtons = [NSIndexSet indexSet];
 	self.selectedButtons = [NSArray array];
+    self.font = [UIFont boldSystemFontOfSize:19.0f];
     return self;
 }
 

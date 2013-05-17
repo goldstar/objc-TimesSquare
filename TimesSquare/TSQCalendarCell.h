@@ -65,12 +65,6 @@
  */
 @property (nonatomic, strong) UIColor *disabledTextColor;
 
-/** The font.
- 
- This font is used for all text the cell draws.
- */
-@property (nonatomic, strong) UIFont *font;
-
 /** The text shadow offset.
  
  This is as you would set on `UILabel`.

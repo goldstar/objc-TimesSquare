@@ -61,6 +61,12 @@
  */
 @property (nonatomic, assign) BOOL lightColoredTodayText;
 
+/** The font.
+ 
+ This font is used for all text the cell draws.
+ */
+@property (nonatomic, strong) UIFont *font;
+
 /** @name State Properties Set by Calendar View */
 
 /** The date at the beginning of the week for this cell.
