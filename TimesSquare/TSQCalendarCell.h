@@ -61,7 +61,7 @@
 
 /** The disabled text color.
  
- This is used for all text the cell if a date is disabled. If this property is not set it will use `textColor`, but at 50% opacity.
+ This is used for all text the cell draws in a disabled state. If this property is not set it will use `textColor`, but at 50% opacity.
  */
 @property (nonatomic, strong) UIColor *disabledTextColor;
 
