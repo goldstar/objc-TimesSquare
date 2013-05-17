@@ -258,7 +258,11 @@
     
     dayButton.frame = rect;
     notThisMonthButton.frame = rect;
-
+    
+    if (![dayButton backgroundImageForState:UIControlStateNormal]) {
+        [dayButton setBackgroundImage:[self thisMonthBackgroundImage] forState:UIControlStateNormal];
+    }
+    
     if (self.indexOfTodayButton == (NSInteger)index) {
         self.todayButton.frame = rect;
     }
@@ -269,6 +273,7 @@
         [button setAccessibilityLabel:[self.dayButtons[index] accessibilityLabel]];
 		button.hidden = NO;
 		button.frame = rect;
+        [dayButton setBackgroundImage:nil forState:UIControlStateNormal];
 	}
 }
 
