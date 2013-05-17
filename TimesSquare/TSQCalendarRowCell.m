@@ -265,6 +265,9 @@
     
     if (self.indexOfTodayButton == (NSInteger)index) {
         self.todayButton.frame = rect;
+        if (![self.todayButton backgroundImageForState:UIControlStateNormal]) {
+            [self.todayButton setBackgroundImage:[self todayBackgroundImage] forState:UIControlStateNormal];
+        }
     }
 	if ([self.indexesOfSelectedButtons containsIndex:(NSInteger)index]) {
 		// find an unused selected button
@@ -274,6 +277,9 @@
 		button.hidden = NO;
 		button.frame = rect;
         [dayButton setBackgroundImage:nil forState:UIControlStateNormal];
+        if (self.indexOfTodayButton == (NSInteger)index) {
+            [self.todayButton setBackgroundImage:nil forState:UIControlStateNormal];
+        }
 	}
 }
 
