@@ -67,7 +67,8 @@
         [dayButtons addObject:button];
         [self.contentView addSubview:button];
         [self configureButton:button];
-        [button setTitleColor:[self.textColor colorWithAlphaComponent:0.5f] forState:UIControlStateDisabled];
+        UIColor *disabledTitleColor = self.disabledTextColor ? self.disabledTextColor : [self.textColor colorWithAlphaComponent:0.5f];
+        [button setTitleColor:disabledTitleColor forState:UIControlStateDisabled];
     }
     self.dayButtons = dayButtons;
 }
