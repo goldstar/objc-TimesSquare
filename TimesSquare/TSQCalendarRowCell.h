@@ -31,11 +31,23 @@
  */
 @property (nonatomic, weak, readonly) UIImage *thisMonthBackgroundImage;
 
+/** The button title label background color for a day that's in this month.
+ 
+ This will be the background color of the button title of each day in this month. This can be used to improve performance by setting the color to an opaque color.
+ */
+@property (nonatomic, strong) UIColor *thisMonthButtonTitleLabelBackgroundColor;
+
 /** The background image for a day that's selected.
  
  This is blue in the system's built-in Calendar app. You probably want to use a stretchable image.
  */
 @property (nonatomic, weak, readonly) UIImage *selectedBackgroundImage;
+
+/** The button title label background color for a day that's selected.
+ 
+ This will be the background color of the button title of each selected day. This can be used to improve performance by setting the color to an opaque color.
+ */
+@property (nonatomic, strong) UIColor *selectedButtonTitleLabelBackgroundColor;
 
 /** The background image for a day that's "today".
  
@@ -43,11 +55,24 @@
  */
 @property (nonatomic, weak, readonly) UIImage *todayBackgroundImage;
 
+/** The button title label background color for a day that's "today".
+ 
+ This will be the background color of the button title of "today" day. This can be used to improve performance by setting the color to an opaque color.
+ */
+@property (nonatomic, strong) UIColor *todayButtonTitleLabelBackgroundColor;
+
 /** The background image for a day that's not this month.
  
  These are the trailing days from the previous month or the leading days from the following month. This can be `nil`.
  */
 @property (nonatomic, weak, readonly) UIImage *notThisMonthBackgroundImage;
+
+/** The button title label background color for a day that's not this month.
+ 
+ This will be the background color of the button title of a day that's not this month. This can be used to improve performance by setting the color to an opaque color.
+ */
+@property (nonatomic, strong) UIColor *notThisMonthTitleLabelBackgroundColor;
+
 
 /** @name Display customizations */
 
