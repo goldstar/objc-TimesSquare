@@ -45,6 +45,12 @@
     self.font = [UIFont boldSystemFontOfSize:19.0f];
     self.controlEventsToSelectDate = UIControlEventTouchDown;
     self.dayButtonsAdjustImageWhenHighlighted = NO;
+    
+    self.todayButtonTitleLabelBackgroundColor = [UIColor clearColor];
+    self.selectedButtonTitleLabelBackgroundColor = [UIColor clearColor];
+    self.thisMonthButtonTitleLabelBackgroundColor = [UIColor clearColor];
+    self.notThisMonthTitleLabelBackgroundColor = [UIColor clearColor];
+    
     return self;
 }
 
@@ -73,6 +79,7 @@
         [self configureButton:button];
 
         [button setBackgroundImage:[self thisMonthBackgroundImage] forState:UIControlStateNormal];
+        button.titleLabel.backgroundColor = self.thisMonthButtonTitleLabelBackgroundColor;
         button.adjustsImageWhenHighlighted = self.dayButtonsAdjustImageWhenHighlighted;
         UIColor *disabledTitleColor = self.disabledTextColor ? self.disabledTextColor : [self.textColor colorWithAlphaComponent:0.5f];
         [button setTitleColor:disabledTitleColor forState:UIControlStateDisabled];
@@ -91,6 +98,7 @@
 
         button.enabled = NO;
         UIColor *backgroundPattern = [UIColor colorWithPatternImage:[self notThisMonthBackgroundImage]];
+        button.titleLabel.backgroundColor = self.notThisMonthTitleLabelBackgroundColor;
         button.backgroundColor = backgroundPattern;
         button.titleLabel.backgroundColor = backgroundPattern;
     }
@@ -105,6 +113,7 @@
     [self.todayButton addTarget:self action:@selector(todayButtonPressed:) forControlEvents:self.controlEventsToSelectDate];
     
     [self.todayButton setBackgroundImage:[self todayBackgroundImage] forState:UIControlStateNormal];
+    self.todayButton.titleLabel.backgroundColor = self.todayButtonTitleLabelBackgroundColor;
     self.todayButton.adjustsImageWhenHighlighted = self.dayButtonsAdjustImageWhenHighlighted;
     UIColor *disabledTitleColor;
     if (self.lightColoredTodayText) {
@@ -130,6 +139,7 @@
     selectedButton.enabled = NO;
     [selectedButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [selectedButton setBackgroundImage:[self selectedBackgroundImage] forState:UIControlStateNormal];
+    selectedButton.titleLabel.backgroundColor = self.selectedButtonTitleLabelBackgroundColor;
     [selectedButton setTitleShadowColor:[UIColor colorWithWhite:0.0f alpha:0.75f] forState:UIControlStateNormal];
     
     selectedButton.titleLabel.shadowOffset = CGSizeMake(0.0f, -1.0f / [UIScreen mainScreen].scale);
@@ -142,6 +152,13 @@
 {
     _beginningDate = date;
     
+    if (!self.dayButtons) {
+        [self createDayButtons];
+        [self createNotThisMonthButtons];
+        [self createTodayButton];
+        [self createSelectedButton];
+    }
+
     NSDateComponents *offset = [NSDateComponents new];
     offset.day = 1;
 
@@ -232,13 +249,6 @@
 
 - (void)layoutSubviews;
 {
-    if (!self.dayButtons) {
-        [self createDayButtons];
-        [self createNotThisMonthButtons];
-        [self createTodayButton];
-        [self createSelectedButton];
-    }
-    
     if (!self.backgroundView) {
         [self setBottomRow:NO];
     }
