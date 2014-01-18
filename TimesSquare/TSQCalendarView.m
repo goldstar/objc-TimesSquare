@@ -391,6 +391,7 @@
         TSQCalendarMonthHeaderCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
         if (!cell) {
             cell = [self makeHeaderCellWithIdentifier:identifier];
+            cell.backgroundColor = [UIColor clearColor];
         }
         return cell;
     } else {
@@ -400,6 +401,7 @@
             cell = [[[self rowCellClass] alloc] initWithCalendar:self.calendar reuseIdentifier:identifier];
             cell.backgroundColor = self.backgroundColor;
             cell.calendarView = self;
+            cell.backgroundColor = [UIColor clearColor];
         }
         return cell;
     }
